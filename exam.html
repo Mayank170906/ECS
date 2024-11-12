@@ -46,60 +46,10 @@
       <div class="data-box">
         <p><span>Satellites:</span> <span id="satellites">Loading...</span></p>
         <p><span>Speed:</span> <span id="speed">Loading...</span></p>
-        <p><span>IP Address:</span> <span id="ip">Loading...</span></p>
-      </div>
-      <div class="data-box">
-        <p><span>Timestamp:</span> <span id="timestamp">Loading...</span></p>
-        <p><span>Time (IST):</span> <span id="time">Loading...</span></p>
-        <p>
-          <span>Network Provider:</span> <span id="provider">Loading...</span>
-        </p>
       </div>
     </div>
 
     <script>
-      // Function to fetch the current time from IPInfo and network provider details
-      function fetchTimeAndNetworkInfo() {
-        fetch("https://ipinfo.io?token=42b0b899fdfbbc") // Replace YOUR_API_KEY with your actual API key
-          .then((response) => response.json())
-          .then((data) => {
-            const timeZone = data.timezone; // Get the timezone from IPInfo
-            const ipAddress = data.ip; // IP address
-            const provider = data.org; // Network provider information
-
-            // Display the IP address and network provider
-            document.getElementById("ip").textContent = ipAddress || "N/A";
-            document.getElementById("provider").textContent = provider || "N/A";
-
-            // Fetch the current time in the timezone (IST)
-            fetch(`http://worldtimeapi.org/api/timezone/${timeZone}`)
-              .then((timeResponse) => timeResponse.json())
-              .then((timeData) => {
-                const timeString = timeData.datetime; // Format: "2024-11-12T13:15:22.302023+05:30"
-                const time = new Date(timeString);
-                let hours = time.getHours();
-                let minutes = time.getMinutes();
-                let seconds = time.getSeconds();
-                let formattedTime = `${hours
-                  .toString()
-                  .padStart(2, "0")}:${minutes
-                  .toString()
-                  .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-                document.getElementById("time").textContent = formattedTime;
-              })
-              .catch((error) => {
-                console.error("Error fetching time:", error);
-                document.getElementById("time").textContent = "N/A";
-              });
-          })
-          .catch((error) => {
-            console.error("Error fetching IPInfo data:", error);
-            document.getElementById("ip").textContent = "N/A";
-            document.getElementById("provider").textContent = "N/A";
-            document.getElementById("time").textContent = "N/A";
-          });
-      }
-
       // Function to fetch GPS data from Firebase
       function fetchGPSData() {
         fetch("https://neaak-2c785-default-rtdb.firebaseio.com/gps.json")
@@ -116,17 +66,14 @@
               data.satellites !== undefined ? data.satellites : "0";
             document.getElementById("speed").textContent =
               data.speed !== undefined ? data.speed + " km/h" : "0 km/h";
-            document.getElementById("timestamp").textContent =
-              data.timestamp || "N/A";
           })
           .catch((error) => {
             console.error("Error fetching GPS data:", error);
           });
       }
 
-      // Call the functions
-      setInterval(fetchGPSData, 2000); // Refresh GPS data every 2 seconds
-      setInterval(fetchTimeAndNetworkInfo, 2000); // Refresh time and network info every 2 seconds
+      // Call the function to refresh GPS data every 2 seconds
+      setInterval(fetchGPSData, 2000);
     </script>
   </body>
 </html>
